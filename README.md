@@ -1,2 +1,2 @@
 # slider-puzzle
-Demo :
+Demo : https://amin-ettefagh.github.io/slider-puzzle/
