@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>بازی سه در سه</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f5f5f5;
+      }
+      .game-container {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        grid-gap: 5px;
+        background-color: #222;
+        padding: 5px;
+        border-radius: 10px;
+      }
+      .tile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #4caf50;
+        color: #fff;
+        font-family: "Arial", sans-serif;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container" id="gameContainer"></div>
+    <div class="empty-tile"></div>
+    <script>
+      const gameContainer = document.getElementById("gameContainer");
+
+      // تولید تایل ها
+      const tiles = [];
+      for (let i = 1; i <= 8; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.textContent = i;
+        tiles.push(tile);
+        gameContainer.appendChild(tile);
+      }
+      gameContainer.appendChild(document.createElement("div"));
+
+      // مختصات تایل ها
+      const tilePositions = [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [1, 0],
+        [1, 1],
+        [1, 2],
+        [2, 0],
+        [2, 1],
+      ];
+
+      // مختصات جای خالی
+      let emptyPosition;
+
+      // مختلط کردن تایل ها
+      const shuffleTiles = () => {
+        tiles.forEach((tile) => {
+          const randPosition =
+            tilePositions[Math.floor(Math.random() * tilePositions.length)];
+          tile.style.gridRowStart = randPosition[0] + 1;
+          tile.style.gridColumnStart = randPosition[1] + 1;
+          if (!emptyPosition) emptyPosition = randPosition;
+          tilePositions.splice(tilePositions.indexOf(randPosition), 1);
+        });
+        gameContainer.children[9].style.gridRowStart = emptyPosition[0] + 1;
+        gameContainer.children[9].style.gridColumnStart = emptyPosition[1] + 1;
+      };
+      shuffleTiles();
+
+      // تابع جابجایی تایل ها
+      const moveTile = (tileNumber) => {
+        const tileIndex = tiles.findIndex(
+          (tile) => tile.textContent === tileNumber.toString()
+        );
+        const [tileRow, tileCol] = [
+          parseInt(tiles[tileIndex].style.gridRowStart) - 1,
+          parseInt(tiles[tileIndex].style.gridColumnStart) - 1,
+        ];
+        const [emptyRow, emptyCol] = emptyPosition;
+
+        // اگر فاصله تایل انتخابی و جای خالی یک خانه باشد
+        if (Math.abs(tileRow - emptyRow) + Math.abs(tileCol - emptyCol) === 1) {
+          tiles[tileIndex].style.gridRowStart = emptyRow + 1;
+          tiles[tileIndex].style.gridColumnStart = emptyCol + 1;
+          const emptyTile = document.querySelector(".empty-tile");
+          // ...
+          emptyTile.style.gridRowStart = tileRow + 1;
+          emptyTile.style.gridColumnStart = tileCol + 1;
+          emptyPosition = [tileRow, tileCol];
+        }
+      };
+
+      // اضافه کردن رویداد کلیک به تایل ها
+      for (let i = 0; i < tiles.length; i++) {
+        tiles[i].addEventListener("click", () => moveTile(i + 1));
+      }
+    </script>
+  </body>
+</html>
